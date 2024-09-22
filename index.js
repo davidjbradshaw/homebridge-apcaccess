@@ -62,14 +62,14 @@ class APCAccess {
       .setCharacteristic(Characteristic.FirmwareRevision, config.firmwareRevision || UNKNOWN)
       .setCharacteristic(Characteristic.SoftwareRevision, config.softwareRevision || UNKNOWN);
 
-    this.batteryService = new Service.BatteryService();
-    this.batteryService
+    this.battery = new Service.Battery();
+    this.battery
       .getCharacteristic(Characteristic.BatteryLevel)
       .on('get', this.getBatteryLevel.bind(this));
-    this.batteryService
+    this.battery
       .getCharacteristic(Characteristic.ChargingState)
       .on('get', this.getChargingState.bind(this));
-    this.batteryService
+    this.battery
       .getCharacteristic(Characteristic.StatusLowBattery)
       .on('get', this.getStatusLowBattery.bind(this));
 
@@ -82,7 +82,7 @@ class APCAccess {
 
   getServices() {
     // Required by Homebridge; expose services this accessory claims to have
-    const services = [this.informationService, this.contactSensor, this.batteryService];
+    const services = [this.informationService, this.contactSensor, this.battery];
 
     if (this.temperatureService) {
       services.push(this.temperatureService);
@@ -195,7 +195,7 @@ class APCAccess {
 
     if (this.state.lowBattery !== lowBattery) {
       this.log.debug('Pushing low battery state change; ', lowBattery, this.state.lowBattery);
-      this.batteryService
+      this.battery
         .getCharacteristic(Characteristic.StatusLowBattery)
         .updateValue(lowBattery);
       this.state.lowBattery = lowBattery;
@@ -210,7 +210,7 @@ class APCAccess {
 
     if (this.state.chargingState !== chargingState) {
       this.log.debug('Pushing charging state change; ', chargingState, this.state.chargingState);
-      this.batteryService
+      this.battery
         .getCharacteristic(Characteristic.ChargingState)
         .updateValue(chargingState);
       this.state.chargingState = chargingState;
@@ -229,7 +229,7 @@ class APCAccess {
       );
       this.log.debug('Pushing battery level change; ', batteryLevel, this.state.batteryLevel);
 
-      this.batteryService.getCharacteristic(Characteristic.BatteryLevel).updateValue(batteryLevel);
+      this.battery.getCharacteristic(Characteristic.BatteryLevel).updateValue(batteryLevel);
       this.state.batteryLevel = batteryLevel;
     }
   }
